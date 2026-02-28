@@ -1,9 +1,9 @@
-/* WorkCost Service Worker (safe by default)
+/* SMT Manager Service Worker (safe by default)
    - Cacheia somente assets estáticos
    - Não cacheia páginas autenticadas
 */
 
-const CACHE_VERSION = "workcost-v1";
+const CACHE_VERSION = "smt-manager-v1";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
 const STATIC_ASSETS = [
@@ -34,7 +34,7 @@ self.addEventListener("activate", (event) => {
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((k) => k.startsWith("workcost-") && k !== STATIC_CACHE)
+          .filter((k) => k.startsWith("smt-manager-") && k !== STATIC_CACHE)
           .map((k) => caches.delete(k))
       );
       await self.clients.claim();
@@ -42,7 +42,6 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Cache-first para assets estáticos
 async function cacheFirst(req) {
   const cached = await caches.match(req);
   if (cached) return cached;
@@ -53,7 +52,6 @@ async function cacheFirst(req) {
   return res;
 }
 
-// Network-first (com fallback offline) só para navegação pública
 async function navigationNetworkFirst(req) {
   try {
     const res = await fetch(req);
@@ -68,23 +66,18 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Apenas mesmo origin
   if (url.origin !== self.location.origin) return;
 
-  // Navegação (document)
   if (req.mode === "navigate") {
-    // não cacheia HTML; tenta rede e cai no offline
     event.respondWith(navigationNetworkFirst(req));
     return;
   }
 
-  // Assets estáticos: cache-first
   if (url.pathname.startsWith("/static/")) {
     event.respondWith(cacheFirst(req));
     return;
   }
 
-  // SW e manifest: rede (com fallback cache se existir)
   if (url.pathname === "/sw.js" || url.pathname === "/manifest.webmanifest") {
     event.respondWith(
       (async () => {

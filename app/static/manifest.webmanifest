@@ -1,7 +1,7 @@
 {
-  "name": "WorkCost",
-  "short_name": "WorkCost",
-  "description": "WorkCost - Acesso corporativo",
+  "name": "SMT Manager",
+  "short_name": "SMT Manager",
+  "description": "SMT Manager - Acesso corporativo",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
