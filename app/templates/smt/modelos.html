@@ -3,7 +3,25 @@
 
 {% block page_title %}
 <div class="d-flex align-items-center w-100">
-  <span class="me-auto">SMT Manager · Modelos</span>
+  <span class="me-auto">
+   Modelos
+  </span>
+
+  <div class="ms-auto d-flex gap-2">
+    <a href="{{ url_for('pages.inicio') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+
+    <button class="btn btn-outline-purple"
+            type="button"
+            onclick="toggleFullscreen()">
+      <i class="bi bi-arrows-fullscreen"></i>
+    </button>
+
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
+      <i class="bi bi-box-arrow-right"></i> Sair
+    </a>
+  </div>
 </div>
 {% endblock %}
 
