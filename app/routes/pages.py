@@ -320,3 +320,29 @@ def manifest():
     resp.headers["Cache-Control"] = "no-cache, must-revalidate"
     resp.headers["Pragma"] = "no-cache"
     return resp
+
+
+@bp.route("/smt")
+@login_required
+def smt_home():
+    return render_template("smt/dashboard.html", active_menu="smt_dashboard")
+
+@bp.route("/smt/dashboard")
+@login_required
+def smt_dashboard():
+    return render_template("smt/dashboard.html", active_menu="smt_dashboard")
+
+@bp.route("/smt/modelos")
+@login_required
+def smt_modelos():
+    return render_template("smt/modelos.html", active_menu="smt_modelos")
+
+@bp.route("/smt/cadastro")
+@login_required
+def smt_cadastro():
+    return render_template("smt/cadastro.html", active_menu="smt_cadastro")
+
+@bp.route("/smt/calcular")
+@login_required
+def smt_calcular():
+    return render_template("smt/calcular.html", active_menu="smt_calcular")
