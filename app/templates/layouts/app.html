@@ -44,10 +44,7 @@
 
     {% set page_titles = {
       "inicio": "Início",
-      "solicitacoes": "Solicitações",
-      "pedidos": "Pedidos",
       "dashboard": "Dashboard",
-      "minhasextras": "Minhas Extras",
       "perfil": "Meu Perfil",
 
       "smt_dashboard": "SMT · Dashboard",
@@ -85,6 +82,11 @@
         <i class="bi bi-house"></i> Início
       </a>
 
+      <a href="{{ url_for('pages.dashboard') }}"
+         class="{% if active_menu == 'dashboard' %}active{% endif %}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+
       <!-- =====================
            SMT MANAGER (NOVO)
            ===================== -->
@@ -113,55 +115,6 @@
       </a>
 
       <hr class="my-3">
-
-      {% if current_user.is_admin %}
-        <a href="{{ url_for('pages.solicitacoes') }}"
-           class="{% if active_menu == 'solicitacoes' %}active{% endif %}">
-          <i class="bi bi-plus-square"></i> Solicitações
-        </a>
-
-        <a href="{{ url_for('pages.pedidos') }}"
-           class="{% if active_menu == 'pedidos' %}active{% endif %}">
-          <i class="bi bi-journal-text"></i> Pedidos
-        </a>
-
-        <a href="{{ url_for('pages.minhas_extras') }}"
-           class="{% if active_menu == 'minhasextras' %}active{% endif %}">
-          <i class="bi bi-clock-history"></i> Minhas Extras
-        </a>
-
-        <a href="{{ url_for('pages.dashboard') }}"
-           class="{% if active_menu == 'dashboard' %}active{% endif %}">
-          <i class="bi bi-speedometer2"></i> Dashboard
-        </a>
-
-      {% elif current_user.extra_authorized %}
-        <a href="{{ url_for('pages.solicitacoes') }}"
-           class="{% if active_menu == 'solicitacoes' %}active{% endif %}">
-          <i class="bi bi-plus-square"></i> Solicitações
-        </a>
-
-        <a href="{{ url_for('pages.minhas_extras') }}"
-           class="{% if active_menu == 'minhasextras' %}active{% endif %}">
-          <i class="bi bi-clock-history"></i> Minhas Extras
-        </a>
-
-        <a href="{{ url_for('pages.dashboard') }}"
-           class="{% if active_menu == 'dashboard' %}active{% endif %}">
-          <i class="bi bi-speedometer2"></i> Dashboard
-        </a>
-
-      {% else %}
-        <a href="{{ url_for('pages.pedidos') }}"
-           class="{% if active_menu == 'pedidos' %}active{% endif %}">
-          <i class="bi bi-journal-text"></i> Pedidos
-        </a>
-
-        <a href="{{ url_for('pages.minhas_extras') }}"
-           class="{% if active_menu == 'minhasextras' %}active{% endif %}">
-          <i class="bi bi-clock-history"></i> Minhas Extras
-        </a>
-      {% endif %}
 
       <a href="{{ url_for('auth.my_profile') }}"
          class="{% if active_menu == 'perfil' %}active{% endif %}">
@@ -192,6 +145,14 @@
       <i class="bi bi-house"></i>
     </div>
     <small>Início</small>
+  </a>
+
+  <a href="{{ url_for('pages.dashboard') }}"
+     class="bottom-item {% if active_menu == 'dashboard' %}active{% endif %}">
+    <div class="bottom-icon">
+      <i class="bi bi-speedometer2"></i>
+    </div>
+    <small>Dash</small>
   </a>
 
   <!-- SMT (NOVO) -->
