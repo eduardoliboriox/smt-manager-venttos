@@ -27,9 +27,64 @@ def listar():
 def cadastrar():
     return jsonify(modelos_service.cadastrar_modelo(request.form))
 
+@bp.route("/modelos", methods=["PUT"])
+def atualizar_modelo():
+    return jsonify(modelos_service.atualizar_modelo(request.form))
+
 @bp.route("/modelos", methods=["DELETE"])
 def excluir():
     return jsonify(modelos_service.excluir_modelo(request.form))
+
+@bp.route("/modelos/calculo_rapido", methods=["POST"])
+def api_calculo_rapido():
+    dados = request.form
+    meta_hora = dados.get("meta_hora")
+    minutos = dados.get("minutos")
+    blank = dados.get("blank")
+
+    if not meta_hora or not minutos:
+        return jsonify({"sucesso": False, "erro": "Meta/hora e minutos são obrigatórios"}), 400
+
+    try:
+        resultado = modelos_service.calculo_rapido(meta_hora, minutos, blank)
+        return jsonify({"sucesso": True, "dados": resultado})
+    except Exception:
+        return jsonify({"sucesso": False, "erro": "Erro no cálculo"}), 400
+
+@bp.route("/smt/calcular_meta", methods=["POST"])
+def api_smt_calcular_meta():
+    tempo_montagem = request.form.get("tempo_montagem")
+    blank = request.form.get("blank")
+
+    if not tempo_montagem or not blank:
+        return jsonify({"sucesso": False, "erro": "Informe tempo de montagem e blank"}), 400
+
+    return jsonify(modelos_service.calcular_meta_smt(tempo_montagem, blank))
+
+@bp.route("/smt/calcular_tempo", methods=["POST"])
+def api_smt_calcular_tempo():
+    meta_hora = request.form.get("meta_hora")
+    blank = request.form.get("blank")
+
+    if not meta_hora or not blank:
+        return jsonify({"sucesso": False, "erro": "Informe meta/hora e blank"}), 400
+
+    return jsonify(modelos_service.calcular_tempo_smt_inverso(meta_hora, blank))
+
+@bp.route("/calcular_perda", methods=["POST"])
+def api_calcular_perda():
+    meta_hora = request.form.get("meta_hora")
+    producao_real = request.form.get("producao_real")
+
+    if not meta_hora or not producao_real:
+        return jsonify({"erro": "Dados incompletos"}), 400
+
+    return jsonify(modelos_service.calcular_perda_producao(meta_hora, producao_real))
+
+
+# ==========================================================
+# (RESTO DO SEU ARQUIVO) - INTACTO
+# ==========================================================
 
 @bp.route("/cargos", methods=["GET"])
 def listar_cargos():
