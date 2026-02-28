@@ -10,6 +10,23 @@ class Config:
     BASE_URL = os.getenv("BASE_URL")
 
     # =========================
+    # APP / BRAND (PWA + UI)
+    # =========================
+    APP_NAME = os.getenv("APP_NAME", "SMT Manager")
+    APP_SHORT_NAME = os.getenv("APP_SHORT_NAME", "SMT Manager")
+    APP_DESCRIPTION = os.getenv("APP_DESCRIPTION", "SMT Manager - Acesso corporativo")
+    APP_THEME_COLOR = os.getenv("APP_THEME_COLOR", "#0f172a")
+    APP_LANG = os.getenv("APP_LANG", "pt-BR")
+
+
+    APP_VERSION = (
+        os.getenv("APP_VERSION")
+        or os.getenv("RAILWAY_GIT_COMMIT_SHA")
+        or os.getenv("RAILWAY_GIT_COMMIT")
+        or "dev"
+    )
+
+    # =========================
     # OPERACIONAL
     # =========================
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
