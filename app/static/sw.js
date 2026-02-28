@@ -3,7 +3,7 @@
    - Não cacheia páginas autenticadas
 */
 
-const CACHE_VERSION = "smt-manager-v1";
+const CACHE_VERSION = "smt-manager-v2"; 
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
 const STATIC_ASSETS = [
@@ -32,11 +32,19 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
+
       await Promise.all(
         keys
-          .filter((k) => k.startsWith("smt-manager-") && k !== STATIC_CACHE)
+          .filter((k) => {
+            if (k === STATIC_CACHE) return false;
+            return (
+              k.startsWith("smt-manager-") ||
+              k.startsWith("workcost-")
+            );
+          })
           .map((k) => caches.delete(k))
       );
+
       await self.clients.claim();
     })()
   );
