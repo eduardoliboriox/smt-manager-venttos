@@ -37,7 +37,15 @@ def create_app():
     def inject_globals():
         return {
             "now": datetime.utcnow,
-            "ENVIRONMENT": app.config.get("ENVIRONMENT", "production")
+            "ENVIRONMENT": app.config.get("ENVIRONMENT", "production"),
+
+            # APP / BRAND
+            "APP_NAME": app.config.get("APP_NAME", "SMT Manager"),
+            "APP_SHORT_NAME": app.config.get("APP_SHORT_NAME", "SMT Manager"),
+            "APP_DESCRIPTION": app.config.get("APP_DESCRIPTION", ""),
+            "APP_THEME_COLOR": app.config.get("APP_THEME_COLOR", "#0f172a"),
+            "APP_LANG": app.config.get("APP_LANG", "pt-BR"),
+            "APP_VERSION": app.config.get("APP_VERSION", "dev"),
         }
 
     app.register_blueprint(pages_bp)
