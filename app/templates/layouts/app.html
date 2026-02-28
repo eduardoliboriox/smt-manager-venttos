@@ -48,7 +48,12 @@
       "pedidos": "Pedidos",
       "dashboard": "Dashboard",
       "minhasextras": "Minhas Extras",
-      "perfil": "Meu Perfil"
+      "perfil": "Meu Perfil",
+
+      "smt_dashboard": "SMT · Dashboard",
+      "smt_modelos": "SMT · Modelos",
+      "smt_cadastro": "SMT · Cadastro",
+      "smt_calcular": "SMT · Cálculos"
     } %}
 
     <span class="username fw-bold">
@@ -79,6 +84,35 @@
          class="{% if active_menu == 'inicio' %}active{% endif %}">
         <i class="bi bi-house"></i> Início
       </a>
+
+      <!-- =====================
+           SMT MANAGER (NOVO)
+           ===================== -->
+      <div style="margin-top:10px;margin-bottom:6px;font-size:12px;font-weight:700;opacity:.65;">
+        SMT MANAGER
+      </div>
+
+      <a href="{{ url_for('pages.smt_dashboard') }}"
+         class="{% if active_menu == 'smt_dashboard' %}active{% endif %}">
+        <i class="bi bi-speedometer2"></i> Dashboard SMT
+      </a>
+
+      <a href="{{ url_for('pages.smt_modelos') }}"
+         class="{% if active_menu == 'smt_modelos' %}active{% endif %}">
+        <i class="bi bi-table"></i> Modelos
+      </a>
+
+      <a href="{{ url_for('pages.smt_cadastro') }}"
+         class="{% if active_menu == 'smt_cadastro' %}active{% endif %}">
+        <i class="bi bi-plus-lg"></i> Cadastro
+      </a>
+
+      <a href="{{ url_for('pages.smt_calcular') }}"
+         class="{% if active_menu == 'smt_calcular' %}active{% endif %}">
+        <i class="bi bi-calculator"></i> Cálculos
+      </a>
+
+      <hr class="my-3">
 
       {% if current_user.is_admin %}
         <a href="{{ url_for('pages.solicitacoes') }}"
@@ -160,73 +194,38 @@
     <small>Início</small>
   </a>
 
-  {% if current_user.is_admin %}
-    <a href="{{ url_for('pages.solicitacoes') }}"
-       class="bottom-item {% if active_menu == 'solicitacoes' %}active{% endif %}">
-      <div class="bottom-icon">
-        <i class="bi bi-plus-circle"></i>
-      </div>
-      <small>Solicitações</small>
-    </a>
+  <!-- SMT (NOVO) -->
+  <a href="{{ url_for('pages.smt_dashboard') }}"
+     class="bottom-item {% if active_menu == 'smt_dashboard' %}active{% endif %}">
+    <div class="bottom-icon">
+      <i class="bi bi-speedometer2"></i>
+    </div>
+    <small>SMT</small>
+  </a>
 
-    <a href="{{ url_for('pages.pedidos') }}"
-       class="bottom-item {% if active_menu == 'pedidos' %}active{% endif %}">
-      <div class="bottom-icon">
-        <i class="bi bi-journal-text"></i>
-      </div>
-      <small>Pedidos</small>
-    </a>
+  <a href="{{ url_for('pages.smt_modelos') }}"
+     class="bottom-item {% if active_menu == 'smt_modelos' %}active{% endif %}">
+    <div class="bottom-icon">
+      <i class="bi bi-table"></i>
+    </div>
+    <small>Modelos</small>
+  </a>
 
-    <a href="{{ url_for('pages.dashboard') }}"
-       class="bottom-item {% if active_menu == 'dashboard' %}active{% endif %}">
-      <div class="bottom-icon">
-        <i class="bi bi-speedometer2"></i>
-      </div>
-      <small>Dashboard</small>
-    </a>
+  <a href="{{ url_for('pages.smt_calcular') }}"
+     class="bottom-item {% if active_menu == 'smt_calcular' %}active{% endif %}">
+    <div class="bottom-icon">
+      <i class="bi bi-calculator"></i>
+    </div>
+    <small>Cálculos</small>
+  </a>
 
-  {% elif current_user.extra_authorized %}
-    <a href="{{ url_for('pages.solicitacoes') }}"
-       class="bottom-item {% if active_menu == 'solicitacoes' %}active{% endif %}">
-      <div class="bottom-icon">
-        <i class="bi bi-plus-circle"></i>
-      </div>
-      <small>Solicitações</small>
-    </a>
-
-    <a href="{{ url_for('pages.dashboard') }}"
-       class="bottom-item {% if active_menu == 'dashboard' %}active{% endif %}">
-      <div class="bottom-icon">
-        <i class="bi bi-speedometer2"></i>
-      </div>
-      <small>Dashboard</small>
-    </a>
-
-  {% else %}
-    <a href="{{ url_for('pages.pedidos') }}"
-       class="bottom-item {% if active_menu == 'pedidos' %}active{% endif %}">
-      <div class="bottom-icon">
-        <i class="bi bi-journal-text"></i>
-      </div>
-      <small>Pedidos</small>
-    </a>
-
-    <a href="{{ url_for('pages.minhas_extras') }}"
-       class="bottom-item {% if active_menu == 'minhasextras' %}active{% endif %}">
-      <div class="bottom-icon">
-        <i class="bi bi-clock-history"></i>
-      </div>
-      <small>Minhas Extras</small>
-    </a>
-  {% endif %}
-
-    <a href="{{ url_for('auth.my_profile') }}"
-       class="bottom-item {% if active_menu == 'perfil' %}active{% endif %}">
-      <div class="bottom-icon">
-        <i class="bi bi-person-circle"></i>
-      </div>
-      <small>Perfil</small>
-    </a>
+  <a href="{{ url_for('auth.my_profile') }}"
+     class="bottom-item {% if active_menu == 'perfil' %}active{% endif %}">
+    <div class="bottom-icon">
+      <i class="bi bi-person-circle"></i>
+    </div>
+    <small>Perfil</small>
+  </a>
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
