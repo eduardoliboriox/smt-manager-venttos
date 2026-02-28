@@ -317,5 +317,6 @@ def manifest():
     static_dir = os.path.join(current_app.root_path, "static")
     resp = make_response(send_from_directory(static_dir, "manifest.webmanifest"))
     resp.headers["Content-Type"] = "application/manifest+json; charset=utf-8"
-    resp.headers["Cache-Control"] = "public, max-age=3600"
+    resp.headers["Cache-Control"] = "no-cache, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
     return resp
