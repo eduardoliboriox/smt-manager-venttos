@@ -1,0 +1,572 @@
+{% extends "layouts/app_print.html" if print_mode else "layouts/app.html" %}{% block title %}Solicitações{% endblock %}
+
+{% block page_title %}
+<div class="d-flex align-items-center w-100">
+  <span class="me-auto">
+    WorkCost · Solicitações
+  </span>
+
+  <div class="ms-auto d-flex gap-2">
+
+    {% if origem == 'pedidos' %}
+      <a href="{{ url_for('pages.pedidos') }}"
+         class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+      </a>
+
+    {% elif origem == 'minhasextras' %}
+      <a href="{{ url_for('pages.minhas_extras') }}"
+         class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+      </a>
+
+    {% else %}
+      <a href="{{ url_for('pages.solicitacoes_abertas') }}"
+         class="btn btn-outline-primary">
+        <i class="bi bi-file-earmark-medical"></i> Abertas
+      </a>
+
+      <a href="{{ url_for('pages.solicitacoes_fechadas') }}"
+         class="btn btn-outline-success">
+        <i class="bi bi-file-earmark-medical"></i> Fechadas
+      </a>
+    {% endif %}
+
+    <button class="btn btn-outline-purple"
+            type="button"
+            onclick="toggleFullscreen()">
+      <i class="bi bi-arrows-fullscreen"></i>
+    </button>
+
+    <a href="{{ url_for('auth.logout') }}"
+       class="btn btn-outline-danger">
+      <i class="bi bi-box-arrow-right"></i> Sair
+    </a>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/solicitacoes.css') }}">
+
+<div class="document-mobile-wrapper">
+  
+  <div class="document-desktop-canvas">
+
+<div class="page-title-solicitacoes mb-4 position-relative">
+
+  <img src="{{ url_for('static', filename='images/logos/logo.jpeg') }}"
+       alt="Logo da empresa"
+       style="
+         position: absolute;
+         left: 0;
+         top: 50%;
+         transform: translateY(-50%);
+         height: 112px;
+         max-height: 120px;
+         object-fit: contain;
+       ">
+
+  {% if modo == 'view' and solicitacao %}
+    <div style="
+         position: absolute;
+         right: 0;
+         top: 50%;
+         transform: translateY(-50%);
+         font-weight: 600;
+         font-size: 0.95rem;
+         color: #495057;
+       ">
+      ID: {{ solicitacao.id }}
+    </div>
+  {% endif %}
+  
+  <div class="text-center">
+    <div class="fw-bold">
+      FORMULÁRIO DE CONTROLE DE EXTRA JORNADA
+    </div>
+    <small class="text-muted">
+      Overtime Control Form
+    </small>
+  </div>
+</div>
+
+<form id="formSolicitacao"
+      data-mode="{{ modo | default('create') }}"
+      data-solicitacao-id="{{ solicitacao.id if modo == 'view' else '' }}"
+      data-user-matricula="{{ current_user.matricula }}"
+      {% if modo == 'view' %}novalidate{% endif %}>
+  <input type="hidden" name="funcionarios_json" id="funcionariosJson">
+
+  {% set setores_selecionados = solicitacao.setores.split(',') if modo == 'view' else [] %}
+  {% set unidades_selecionadas = solicitacao.unidade.split(',') if modo == 'view' and solicitacao.unidade else [] %}
+  
+  <!-- =======================
+       DADOS GERAIS
+       ======================= -->
+  <div class="card p-4 shadow-sm mb-4">
+    <div class="row g-4">
+
+      <div class="col-md-4">
+        <label class="form-label fw-bold">
+          Data <small class="text-muted">/ Date</small>
+        </label>
+        <input type="date"
+               name="data"
+               class="form-control"
+               value="{{ solicitacao.data if modo == 'view' else now().date() }}"
+               {% if modo == 'view' %}disabled{% endif %}
+               required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-bold d-block">
+          Turno <small class="text-muted">/ Shift</small>
+        </label>
+      
+        <select name="turnos"
+                class="form-select turno-select"
+                {% if modo == 'view' %}disabled{% endif %}>
+          
+          <option value="">Selecione</option>
+      
+          <option value="1T"
+            {% if modo == 'view' and '1T' in solicitacao.turnos %}selected{% endif %}>
+            1º Turno
+          </option>
+      
+          <option value="2T"
+            {% if modo == 'view' and '2T' in solicitacao.turnos %}selected{% endif %}>
+            2º Turno
+          </option>
+      
+          <option value="3T"
+            {% if modo == 'view' and '3T' in solicitacao.turnos %}selected{% endif %}>
+            3º Turno
+          </option>
+      
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-bold">
+          Unidade <small class="text-muted">/ Unidad</small>
+        </label>
+        <select name="unidade" class="form-select" {% if modo == 'view' %}disabled{% endif %}>
+          {% for c in ['VAC','VTE','VTT'] %}
+            <option value="{{ c }}"
+              {% if modo == 'view' and c in unidades_selecionadas %}selected{% endif %}>
+              {{ c }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-bold">
+          Data da Realização <small class="text-muted">/ Execution Date</small>
+        </label>
+        <input type="date"
+               name="data_execucao"
+               class="form-control"
+               value="{{ solicitacao.data_execucao if modo == 'view' else now().date() }}"
+               {% if modo == 'view' %}disabled{% endif %}
+               required>
+      </div>      
+     
+      <div class="col-md-4">
+        <label class="form-label fw-bold">
+          Setores envolvidos <small class="text-muted">/ Departments</small>
+        </label>
+
+        <div class="multiselect {% if modo == 'view' %}disabled{% endif %}" id="setoresSelect">
+          <div class="multiselect-display {% if setores_selecionados %}has-value{% endif %}" id="setoresDisplay">
+            {% if modo == 'view' and setores_selecionados %}
+              {{ setores_selecionados | join(' / ') }}
+            {% else %}
+              Selecione um ou mais setores envolvidos nesta extra
+            {% endif %}
+          </div>
+        
+          <div class="multiselect-options">
+            {% for setor in [
+              'Engenharia',
+              'Estoque',
+              'IM',
+              'Manutenção',
+              'PCP',
+              'PTH',
+              'SMT',
+              'TI'
+            ] %}
+              <label class="multiselect-option">
+                <input type="checkbox"
+                       value="{{ setor }}"
+                       name="setores"
+                       {% if modo == 'view' and setor in setores_selecionados %}checked{% endif %}
+                       {% if modo == 'view' %}disabled{% endif %}>
+                <span>{{ setor }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-bold">
+          Descrição <small class="text-muted">/ Description</small>
+        </label>
+          <select name="descricao" class="form-select" {% if modo == 'view' %}disabled{% endif %}>
+            {% for d in [
+              ('Hora Extra','Hora Extra / Overtime'),
+              ('Banco de Horas','Banco de Horas / Time Bank'),
+              ('Compensação','Compensação / Compensation')
+            ] %}
+              <option value="{{ d[0] }}"
+                {% if modo == 'view' and solicitacao.descricao == d[0] %}selected{% endif %}>
+                {{ d[1] }}
+              </option>
+            {% endfor %}
+          </select>
+      </div>
+
+      {% set clientes_selecionados = solicitacao.cliente.split(',') if modo == 'view' and solicitacao.cliente else [] %}
+      
+      <div class="col-md-4">
+        <label class="form-label fw-bold">
+          Cliente <small class="text-muted">/ Customer</small>
+        </label>
+      
+        <div class="multiselect {% if modo == 'view' %}disabled{% endif %}" id="clientesSelect">
+          <div class="multiselect-display {% if clientes_selecionados %}has-value{% endif %}" id="clientesDisplay">
+            {% if modo == 'view' and clientes_selecionados %}
+              {{ clientes_selecionados | join(' / ') }}
+            {% else %}
+              Selecione um ou mais clientes
+            {% endif %}
+          </div>
+      
+          <div class="multiselect-options">
+            {% for cliente in [
+            'Harman',
+            'TCL',
+            'HQ',
+            'LG',
+            'Spacecomm',
+            'Midea',
+            'Hikvision',
+            'Electrolux',
+            'Motorola'
+            ]|sort %}
+              <label class="multiselect-option">
+                <input type="checkbox"
+                       value="{{ cliente }}"
+                       name="clientes"
+                       {% if modo == 'view' and cliente in clientes_selecionados %}checked{% endif %}
+                       {% if modo == 'view' %}disabled{% endif %}>
+                <span>{{ cliente }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+<!-- FUNCIONÁRIOS -->
+<h5 class="fw-bold">
+  Lista de Funcionários <small class="text-muted">/ Employee List</small>
+</h5>
+
+  <table class="table table-bordered align-middle" id="funcionariosTable">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th><div>Matrícula</div><small class="text-muted">employee code</small></th>
+        <th><div>Colaborador</div><small class="text-muted">employee</small></th>
+        <th><div>Endereço</div><small class="text-muted">address</small></th>
+        <th><div>Telefone</div><small class="text-muted">phone</small></th>
+        <th><div>Início</div><small class="text-muted">start</small></th>
+        <th><div>Término</div><small class="text-muted">end</small></th>
+        <th><div>Transporte</div><small class="text-muted">transport</small></th>
+        <th><div>Assinatura</div><small class="text-muted">signature</small></th>
+          {% if not print_mode %}
+          <th></th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% if modo == 'view' %}
+          {% for f in funcionarios %}
+          <tr>
+            <td>{{ loop.index }}</td>
+      
+            <td>
+              <input class="form-control matricula"
+                     value="{{ f.matricula }}"
+                     data-matricula="{{ f.matricula }}"
+                     disabled>
+            </td>
+      
+            <td><input class="form-control" value="{{ f.nome }}" disabled></td>
+            <td><input class="form-control" value="{{ f.endereco }}" disabled></td>
+            <td><input class="form-control" value="{{ f.telefone }}" disabled></td>
+            <td><input class="form-control" value="{{ f.inicio }}" disabled></td>
+            <td><input class="form-control" value="{{ f.termino }}" disabled></td>
+            <td><input class="form-control" value="{{ f.transporte }}" disabled></td>
+      
+            <td>
+              {% if f.signed_at %}
+                <div class="signature-box signed">
+                  {{ f.signed_by }}
+                </div>
+              {% else %}
+                {% if not print_mode %}
+                  <div class="signature-box pending mb-1">
+                    pendente
+                  </div>
+      
+                  <input type="password"
+                         class="form-control form-control-sm signature-password mb-1"
+                         placeholder="Senha">
+      
+                  <button type="button"
+                          class="btn btn-sm btn-outline-success btn-sign">
+                    Confirmar
+                  </button>
+                {% else %}
+                  <div class="signature-box pending">
+                    pendente
+                  </div>
+                {% endif %}
+              {% endif %}
+            </td>
+      
+            {% if not print_mode %}
+            <td>
+              <button type="button"
+                      class="btn btn-sm btn-danger">
+                X
+              </button>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        {% endif %}
+      </tbody>
+
+  </table>
+
+  <small class="text-muted d-block mb-4">
+    A assinatura eletrônica do colaborador, efetuada no sistema corporativo, formaliza sua ciência quanto às solicitações
+    relacionadas à jornada de trabalho, incluindo horas extras, banco de horas ou compensações, garantindo o registro digital da manifestação
+    e o cumprimento dos trâmites administrativos estabelecidos.
+  </small>
+
+  <button type="button" class="btn btn-secondary btn-add-row mb-3" id="btnAddRow">
+    Adicionar linha
+  </button>
+
+  <div class="mb-4">
+    <label class="fw-semibold">
+      Atividades a realizar <small class="text-muted">/ Activities</small>
+    </label>
+    <textarea name="atividades"
+          class="form-control"
+          rows="3"
+          {% if modo == 'view' %}disabled{% endif %}>{{ solicitacao.atividades if modo == 'view' else '' }}</textarea>
+  </div>
+  
+  <!-- ========================
+       FLUXO DE APROVAÇÃO
+       ======================== -->
+  <h5 class="fw-bold mt-4">
+    Fluxo de Aprovação <small class="text-muted">/ Approval</small>
+  </h5>
+    
+  <div class="row justify-content-center g-4 mt-3 approval-flow">
+    {% for role in [
+      'Solicitante',
+      'Gestor',
+      'Gerente',
+      'Controladoria',
+      'Diretoria'
+    ] %}
+      {% set role_key = role.lower() %}
+  
+      <div class="col-md-2 text-center approval-item" data-role="{{ role }}">
+        <div class="approval-box {{ 'signed' if aprovacoes.get(role_key) else 'pending' }} mb-1">
+          <div class="approval-role fw-semibold">
+            {{ role }}
+          </div>
+        
+          {% if aprovacoes.get(role_key) %}
+            <div class="approval-username">
+              {{ aprovacoes[role_key].username }}
+            </div>
+          {% endif %}
+        </div>
+  
+        {% if not aprovacoes.get(role_key) %}
+          <div class="approval-input-wrapper">
+            <input type="password"
+                   class="form-control form-control-sm approval-password mb-1"
+                   placeholder="Senha">
+          </div>
+  
+          <button type="button"
+                  class="btn btn-sm btn-outline-success btn-approve">
+            CONFIRMAR
+          </button>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  
+  <hr class="my-4">
+  
+  <div class="row align-items-center g-3 mb-4">
+    <div class="col-md-4">
+      <label class="fw-bold">
+        RECEBIDO EM <small class="text-muted">(Received date)</small>
+      </label>
+      <input type="date"
+       name="recebido_em"
+       id="recebidoEm"
+       class="form-control"
+       value="{{ solicitacao.recebido_em if modo == 'view' and solicitacao.recebido_em else '' }}">
+    </div>
+  
+    <!-- RH -->
+    <div class="col-md-4 text-center approval-item" data-role="rh">
+      {% set role_key = 'rh' %}
+  
+      <div class="approval-box {{ 'signed' if aprovacoes.get(role_key) else 'pending' }} mb-1">
+        <div class="approval-role fw-semibold">
+          Recursos Humanos
+        </div>
+      
+        {% if aprovacoes.get(role_key) %}
+          <div class="approval-username">
+            {{ aprovacoes[role_key].username }}
+          </div>
+        {% endif %}
+      </div>
+  
+      {% if not aprovacoes.get(role_key) %}
+        <div class="approval-input-wrapper">
+          <input type="password"
+                 class="form-control form-control-sm approval-password mb-1"
+                 placeholder="Senha RH">
+        </div>
+  
+        <button type="button"
+                class="btn btn-sm btn-outline-success btn-approve">
+          CONFIRMAR
+        </button>
+      {% endif %}
+    </div>
+  
+    <div class="col-md-4">
+      <label class="fw-bold">
+        LANÇADO <small class="text-muted">(Launched)</small>
+      </label>
+      <input type="date"
+             id="lancadoEm"
+             name="lancado_em"
+             class="form-control"
+             value="{{ solicitacao.lancado_em if modo == 'view' and solicitacao.lancado_em else '' }}">
+    </div>
+  </div>
+  {% if modo == 'view' %}
+  <button type="button"
+          id="btnSaveView"
+          class="btn btn-success w-100 mt-4">
+    SALVAR ALTERAÇÕES
+  </button>
+  {% else %}
+  <button class="btn btn-primary w-100">
+    Registrar Solicitação
+  </button>
+  {% endif %}
+</form>
+
+{% if print_mode and provisao %}
+<hr class="my-5">
+
+<h4 class="fw-bold text-center">
+  PROVISÃO DE GASTOS
+</h4>
+
+<table class="table table-bordered text-center align-middle mt-3">
+  <thead>
+    <tr>
+      <th>Matrícula</th>
+      <th>Nome</th>
+      <th>Horas</th>
+      <th>Noturnas</th>
+      <th>Refeição</th>
+      <th>Transporte</th>
+      <th>Adic. Noturno</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for f in provisao.funcionarios %}
+    <tr>
+      <td>{{ f.matricula }}</td>
+      <td>{{ f.nome }}</td>
+      <td>{{ f.horas_total }}</td>
+      <td>{{ f.horas_noturnas }}</td>
+      <td>{{ f.custo_refeicao }}</td>
+      <td>{{ f.custo_transporte }}</td>
+      <td>{{ f.adicional_noturno }}</td>
+      <td><strong>{{ f.total }}</strong></td>
+    </tr>
+    {% endfor %}
+
+    <tr>
+      <td colspan="7"><strong>Total Geral</strong></td>
+      <td><strong>{{ provisao.total_geral }}</strong></td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
+    
+    {{ super() }}
+    
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if print_mode %}
+  <script>
+    window.addEventListener("load", function () {
+
+      setTimeout(function () {
+
+        window.print();
+        window.onafterprint = function () {
+          window.history.back();
+        };
+
+      }, 300);
+
+    });
+  </script>
+{% else %}
+  <script src="{{ url_for('static', filename='js/solicitacoes.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/document-fit.js') }}"></script>
+
+  {% if modo == 'create' %}
+    <script src="{{ url_for('static', filename='js/solicitacoes-create.js') }}"></script>
+  {% else %}
+    <script src="{{ url_for('static', filename='js/solicitacoes-view.js') }}"></script>
+  {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "layouts/app.html" %}
+{% block title %}Meu Perfil{% endblock %}
+
+{% block page_title %}
+<div class="d-flex align-items-center w-100">
+  <span class="me-auto">
+    WorkCost · Meu Perfil
+  </span>
+
+  <div class="ms-auto d-flex gap-2">
+    <a href="{{ url_for('pages.inicio') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+
+    <button class="btn btn-outline-purple" onclick="toggleFullscreen()">
+      <i class="bi bi-arrows-fullscreen"></i>
+    </button>
+
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
+      <i class="bi bi-box-arrow-right"></i> Sair
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm p-4" style="max-width: 640px">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="post">
+
+    <h5 class="mb-3">Dados do usuário</h5>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label">Nome completo</label>
+        <input class="form-control" value="{{ user.full_name }}" disabled>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Usuário</label>
+        <input class="form-control" value="{{ user.username }}" disabled>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input class="form-control" value="{{ user.email }}" disabled>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Matrícula</label>
+        <input class="form-control" value="{{ user.matricula }}" disabled>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Setor</label>
+        <input class="form-control" value="{{ user.setor }}" disabled>
+      </div>
+    </div>
+
+    {% if user.user_type == "CLT" %}
+    <h5 class="mb-3">Remuneração (CLT)</h5>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label">Remuneração mensal (base)</label>
+        <input name="remuneracao_mensal"
+               class="form-control"
+               placeholder="Ex: 1.951,70"
+               inputmode="decimal"
+               value="{{ profile.remuneracao_mensal if profile and profile.remuneracao_mensal is not none }}">
+        <small class="text-muted d-block mt-1">
+          Usado para calcular adicional noturno e reflexo DSR nas provisões.
+        </small>
+      </div>
+    </div>
+    {% endif %}
+
+    <h5 class="mb-3">Contato & Endereço</h5>
+
+    <input name="phone"
+           data-mask="phone"
+           class="form-control mb-2"
+           placeholder="(99) 99999-9999"
+           value="{{ profile.phone if profile }}">
+
+    <input name="street" class="form-control mb-2" placeholder="Rua"
+           value="{{ profile.street if profile }}">
+    <input name="number" class="form-control mb-2" placeholder="Número"
+           value="{{ profile.number if profile }}">
+    <input name="neighborhood" class="form-control mb-2" placeholder="Bairro"
+           value="{{ profile.neighborhood if profile }}">
+    <input name="city" class="form-control mb-2" placeholder="Cidade"
+           value="{{ profile.city if profile }}">
+    <input name="state" class="form-control mb-2" placeholder="UF"
+           value="{{ profile.state if profile }}">
+    <input name="zip_code" data-mask="zip" class="form-control mb-2"
+           placeholder="00000-000"
+           value="{{ profile.zip_code if profile }}">
+    <input name="complement" class="form-control mb-2" placeholder="Complemento"
+           value="{{ profile.complement if profile }}">
+    <input name="reference" class="form-control mb-4" placeholder="Referência"
+           value="{{ profile.reference if profile }}">
+
+    <h5 class="mb-3">Alterar senha</h5>
+
+    <input type="password" name="current_password"
+           class="form-control mb-2" placeholder="Senha atual">
+
+    <input type="password" name="new_password"
+           class="form-control mb-2" placeholder="Nova senha">
+
+    <input type="password" name="confirm_password"
+           class="form-control mb-3" placeholder="Confirmar nova senha">
+
+    <small class="text-muted d-block mb-3">
+      Deixe em branco para não alterar
+    </small>
+
+    <button class="btn btn-outline-success">
+      Salvar alterações
+    </button>
+
+  </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/input-masks.js') }}"></script>
+{% endblock %}
