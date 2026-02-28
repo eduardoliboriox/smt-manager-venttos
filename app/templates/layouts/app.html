@@ -46,11 +46,10 @@
       "inicio": "Início",
       "dashboard": "Dashboard",
       "perfil": "Meu Perfil",
-
-      "smt_dashboard": "SMT · Dashboard",
-      "smt_modelos": "SMT · Modelos",
-      "smt_cadastro": "SMT · Cadastro",
-      "smt_calcular": "SMT · Cálculos"
+      "smt_dashboard": "Dashboard",
+      "smt_modelos": "Modelos",
+      "smt_cadastro": "Cadastro",
+      "smt_calcular": "Cálculos"
     } %}
 
     <span class="username fw-bold">
@@ -82,21 +81,9 @@
         <i class="bi bi-house"></i> Início
       </a>
 
-      <a href="{{ url_for('pages.dashboard') }}"
-         class="{% if active_menu == 'dashboard' %}active{% endif %}">
-        <i class="bi bi-speedometer2"></i> Dashboard
-      </a>
-
-      <!-- =====================
-           SMT MANAGER (NOVO)
-           ===================== -->
-      <div style="margin-top:10px;margin-bottom:6px;font-size:12px;font-weight:700;opacity:.65;">
-        SMT MANAGER
-      </div>
-
       <a href="{{ url_for('pages.smt_dashboard') }}"
          class="{% if active_menu == 'smt_dashboard' %}active{% endif %}">
-        <i class="bi bi-speedometer2"></i> Dashboard SMT
+        <i class="bi bi-speedometer2"></i> Dashboard
       </a>
 
       <a href="{{ url_for('pages.smt_modelos') }}"
@@ -114,12 +101,16 @@
         <i class="bi bi-calculator"></i> Cálculos
       </a>
 
+      <a href="{{ url_for('pages.dashboard') }}"
+         class="{% if active_menu == 'dashboard' %}active{% endif %}">
+        <i class="bi bi-graph-up"></i> Dashboard (Geral)
+      </a>
+
       <hr class="my-3">
 
       <a href="{{ url_for('auth.my_profile') }}"
          class="{% if active_menu == 'perfil' %}active{% endif %}">
-         <i class="bi bi-person-circle"></i>
-        Perfil
+        <i class="bi bi-person-circle"></i> Meu Perfil
       </a>
     </nav>
   </aside>
@@ -137,6 +128,7 @@
   </main>
 </div>
 
+<!-- MOBILE: no máximo 5 páginas -->
 <nav class="bottom-nav d-md-none">
 
   <a href="{{ url_for('pages.inicio') }}"
@@ -147,29 +139,20 @@
     <small>Início</small>
   </a>
 
-  <a href="{{ url_for('pages.dashboard') }}"
-     class="bottom-item {% if active_menu == 'dashboard' %}active{% endif %}">
-    <div class="bottom-icon">
-      <i class="bi bi-speedometer2"></i>
-    </div>
-    <small>Dash</small>
-  </a>
-
-  <!-- SMT (NOVO) -->
-  <a href="{{ url_for('pages.smt_dashboard') }}"
-     class="bottom-item {% if active_menu == 'smt_dashboard' %}active{% endif %}">
-    <div class="bottom-icon">
-      <i class="bi bi-speedometer2"></i>
-    </div>
-    <small>SMT</small>
-  </a>
-
   <a href="{{ url_for('pages.smt_modelos') }}"
      class="bottom-item {% if active_menu == 'smt_modelos' %}active{% endif %}">
     <div class="bottom-icon">
       <i class="bi bi-table"></i>
     </div>
     <small>Modelos</small>
+  </a>
+
+  <a href="{{ url_for('pages.smt_cadastro') }}"
+     class="bottom-item {% if active_menu == 'smt_cadastro' %}active{% endif %}">
+    <div class="bottom-icon">
+      <i class="bi bi-plus-lg"></i>
+    </div>
+    <small>Cadastro</small>
   </a>
 
   <a href="{{ url_for('pages.smt_calcular') }}"
@@ -187,6 +170,7 @@
     </div>
     <small>Perfil</small>
   </a>
+
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
