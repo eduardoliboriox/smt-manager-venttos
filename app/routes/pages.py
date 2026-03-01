@@ -19,15 +19,15 @@ def dashboard():
 @bp.route("/smt")
 @login_required
 def smt_home():
-    # Mantém a rota /smt funcionando, mas agora usando inicio.html
-    return render_template("inicio.html", active_menu="smt_dashboard")
+    # Mantém a rota /smt funcionando, mas o sistema foi unificado no inicio.html
+    return render_template("inicio.html", active_menu="inicio")
 
 
 @bp.route("/smt/dashboard")
 @login_required
 def smt_dashboard():
-    # Dashboard SMT foi incorporado ao inicio.html (não existe mais smt/dashboard.html)
-    return render_template("inicio.html", active_menu="smt_dashboard")
+    # Compatibilidade: esta rota existia antes, mas agora tudo está no inicio.html
+    return render_template("inicio.html", active_menu="inicio")
 
 
 @bp.route("/smt/modelos")
