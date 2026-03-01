@@ -46,7 +46,8 @@
       "inicio": "Início",
       "dashboard": "Dashboard",
       "perfil": "Meu Perfil",
-      "smt_dashboard": "Dashboard",
+
+      "smt_dashboard": "Dashboard SMT",
       "smt_modelos": "Modelos",
       "smt_cadastro": "Cadastro",
       "smt_calcular": "Cálculos"
@@ -79,6 +80,12 @@
       <a href="{{ url_for('pages.inicio') }}"
          class="{% if active_menu == 'inicio' %}active{% endif %}">
         <i class="bi bi-house"></i> Início
+      </a>
+
+      <!-- Dashboard SMT agora é o "inicio.html" com o resumo SMT incorporado -->
+      <a href="{{ url_for('pages.smt_dashboard') }}"
+         class="{% if active_menu == 'smt_dashboard' %}active{% endif %}">
+        <i class="bi bi-speedometer2"></i> Dashboard SMT
       </a>
 
       <a href="{{ url_for('pages.smt_modelos') }}"
@@ -134,7 +141,7 @@
     <small>Início</small>
   </a>
 
-  <a href="{{ url_for('pages.modelos') }}"
+  <a href="{{ url_for('pages.smt_modelos') }}"
      class="bottom-item {% if active_menu == 'smt_modelos' %}active{% endif %}">
     <div class="bottom-icon">
       <i class="bi bi-table"></i>
