@@ -16,17 +16,21 @@ def dashboard():
     return render_template("dashboard.html", active_menu="dashboard")
 
 
+@bp.route("/powerbi")
+@login_required
+def powerbi():
+    return render_template("powerbi.html", active_menu="powerbi")
+
+
 @bp.route("/smt")
 @login_required
 def smt_home():
-    # Mantém a rota /smt funcionando, mas o sistema foi unificado no inicio.html
     return render_template("inicio.html", active_menu="inicio")
 
 
 @bp.route("/smt/dashboard")
 @login_required
 def smt_dashboard():
-    # Compatibilidade: esta rota existia antes, mas agora tudo está no inicio.html
     return render_template("inicio.html", active_menu="inicio")
 
 
