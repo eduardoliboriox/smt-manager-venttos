@@ -13,7 +13,28 @@ def inicio():
 @bp.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard.html", active_menu="dashboard")
+    filtros = {
+        "data_inicial": "",
+        "data_final": "",
+        "turno": "",
+        "filial": "",
+    }
+
+    kpis = {
+        "absenteismo": 0,
+        "linhas": 0,
+    }
+
+    return render_template(
+        "dashboard.html",
+        active_menu="dashboard",
+        filtros=filtros,
+        kpis=kpis,
+        ranking_extras=[],
+        ranking_objetivos=[],
+        ranking_clientes=[],
+        ranking_tipos_provisao=[],
+    )
 
 
 @bp.route("/powerbi")
