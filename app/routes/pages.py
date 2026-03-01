@@ -13,40 +13,39 @@ def inicio():
 @bp.route("/dashboard")
 @login_required
 def dashboard():
-
     return render_template("dashboard.html", active_menu="dashboard")
-
 
 
 @bp.route("/smt")
 @login_required
 def smt_home():
-    return render_template("smt/dashboard.html", active_menu="smt_dashboard")
+    # Mantém a rota /smt funcionando, mas agora usando inicio.html
+    return render_template("inicio.html", active_menu="smt_dashboard")
 
 
 @bp.route("/smt/dashboard")
 @login_required
 def smt_dashboard():
-    return render_template("smt/dashboard.html", active_menu="smt_dashboard")
+    # Dashboard SMT foi incorporado ao inicio.html (não existe mais smt/dashboard.html)
+    return render_template("inicio.html", active_menu="smt_dashboard")
 
 
 @bp.route("/smt/modelos")
 @login_required
 def smt_modelos():
-    return render_template("smt/modelos.html", active_menu="smt_modelos")
+    return render_template("modelos.html", active_menu="smt_modelos")
 
 
 @bp.route("/smt/cadastro")
 @login_required
 def smt_cadastro():
-    return render_template("smt/cadastro.html", active_menu="smt_cadastro")
+    return render_template("cadastro.html", active_menu="smt_cadastro")
 
 
 @bp.route("/smt/calcular")
 @login_required
 def smt_calcular():
-    return render_template("smt/calcular.html", active_menu="smt_calcular")
-
+    return render_template("calcular.html", active_menu="smt_calcular")
 
 
 @bp.route("/privacy-policy")
